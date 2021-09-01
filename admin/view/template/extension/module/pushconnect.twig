@@ -1,0 +1,182 @@
+{{ header }}{{ column_left }}
+<div id="content">
+
+    <div class="page-header">
+        <div class="container-fluid">
+            <div class="pull-right">
+                <button type="submit" form="form-settings" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+                <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+
+            <h1>{{ heading_title }}</h1>
+            <ul class="breadcrumb">
+                {% for breadcrumb in breadcrumbs %}
+                    <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+                    {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid">
+        {% if error_warning %}
+            <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endif %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{{text_settings}}</h3>
+            </div>
+            <div class="panel-body">
+
+                <form action="{{action}}" method="post" enctype="multipart/form-data" id="form-settings" class="form-horizontal">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tab-settings" data-toggle="tab">{{text_settings}}</a></li>
+                        {% for store in stores %}
+                            <li><a href="#tab-{{store['store_id']}}" data-toggle="tab">{{store['name']}}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab-settings">
+                            <fieldset>
+                                <legend>{{text_module_settings}}</legend>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">{{entry_status}}</label>
+                                    <div class="col-sm-10">
+                                        <select name="module_pushconnect_status" class="form-control">
+                                            <option value="0" {% if (module_pushconnect_status == 0) %} selected {% endif %}>{{text_disabled}}</option>
+                                            <option value="1" {% if (module_pushconnect_status == 1) %} selected {% endif %}>{{text_enabled}}</option>
+                                        </select>
+                                    </div>
+                                </div>								
+								<div class="form-group">
+									<label class="col-sm-2 control-label">{{entry_install}}</label>
+									<div class="col-sm-10">
+										<a href="#" id="install-sw" class="btn btn-success">{{entry_install_sw}}</a>
+											{% if sw_installed %}
+												<p>{{text_install_warning}}</p>
+											{% endif %}
+									</div>
+								</div>   
+                            </fieldset>
+                        </div>
+                        {% for store in stores %}                  
+                            <div class="tab-pane" id="tab-{{store.store_id}}">
+                                <fieldset>
+                                    <legend>{{text_api_settings}}</legend>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{entry_status}}</label>
+                                        <div class="col-sm-10">
+                                            <select name="settings[{{store.store_id}}][pushconnect_status]" class="form-control">
+                                                <option value="0" {% if (store.pushconnect_status == 0) %} selected {% endif %}>{{text_disabled}}</option>
+                                                <option value="1" {% if (store.pushconnect_status == 1) %} selected {% endif %}>{{text_enabled}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{entry_logging}}</label>
+                                        <div class="col-sm-10">
+                                            <select name="settings[{{store.store_id}}][pushconnect_logging]" class="form-control">
+                                                <option value="0" {% if(store.pushconnect_logging == 0) %} selected {% endif %}>{{text_disabled}}</option>
+                                                <option value="1" {% if(store.pushconnect_logging == 1) %} selected {% endif %}>{{text_enabled}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                            <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{entry_script}}</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="settings[{{store.store_id}}][pushconnect_script]" value="{{store.pushconnect_script}}" placeholder="{{entry_script}}" class="form-control" />									
+                                            {% if (errors[store.store_id].pushconnect_script) %}
+                                                <div class="text-danger">{{errors[store.store_id].pushconnect_script}}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{entry_api_key}}</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="settings[{{store.store_id}}][pushconnect_api_key]" value="{{store.pushconnect_api_key}}" placeholder="{{entry_api_key}}" class="form-control" />									
+                                            {% if (errors[store.store_id].pushconnect_api_key) %}
+                                                <div class="text-danger">{{errors[store.store_id].pushconnect_api_key}}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <fieldset>
+                                    <legend>{{text_notification_settings}}</legend>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{entry_order_updates}}</label>
+                                        <div class="col-sm-10">
+                                            <select name="settings[{{store.store_id}}][pushconnect_order_updates]" class="form-control">
+                                                <option value="0" {% if (store.pushconnect_order_updates == 0) %} selected {% endif %}>{{text_disabled}}</option>
+                                                <option value="1" {% if (store.pushconnect_order_updates == 1) %} selected {% endif %}>{{text_enabled}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <fieldset>
+                                    <legend>{{text_discount_module}}</legend>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{entry_ot_module_status}}</label>
+                                        <div class="col-sm-10">
+                                            <select name="settings[{{store.store_id}}][pushconnect_ot_module_status]" class="form-control">
+                                                <option value="0" {% if(store.pushconnect_ot_module_status == 0) %} selected {% endif %}>{{text_disabled}}</option>
+                                                <option value="1" {% if(store.pushconnect_ot_module_status == 1) %} selected {% endif %}>{{text_enabled}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{entry_ot_module_discount_value}}</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="settings[{{store.store_id}}][pushconnect_ot_module_discount_value]" value="{{store.pushconnect_ot_module_discount_value}}" placeholder="{{entry_ot_module_discount_value}}" class="form-control" />
+                                            {% if (errors[store.store_id].pushconnect_ot_module_discount_value) %}
+                                                <div class="text-danger">{{errors[store.store_id].pushconnect_ot_module_discount_value}}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">{{entry_ot_module_discount_type}}</label>
+                                        <div class="col-sm-10">
+                                            <select name="settings[{{store.store_id}}][pushconnect_ot_module_discount_type]" class="form-control">
+                                                <option value="F" {% if (store.pushconnect_ot_module_discount_type == 'F') %} selected {% endif %}>{{entry_ot_module_discount_type_fixed}}</option>
+                                                <option value="P" {% if (store.pushconnect_ot_module_discount_type == 'P') %} selected {% endif %}>{{entry_ot_module_discount_type_percent}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">
+                                            <span data-toggle="tooltip" title="" data-original-title="{{text_discount_times_hint}}">{{entry_ot_module_discount_times}}</span>
+                                        </label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="settings[{{store.store_id}}][pushconnect_ot_module_discount_times]" value="{{store.pushconnect_ot_module_discount_times}}" placeholder="{{entry_ot_module_discount_times}}" class="form-control" />
+                                            {% if (errors[store.store_id].pushconnect_ot_module_discount_times) %}
+                                                <div class="text-danger">{{errors[store.store_id].pushconnect_ot_module_discount_times}}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+	$(function(){
+		$('#install-sw').click(function(e) {
+			e.preventDefault();
+			$.getJSON('{{install_link|replace({'&amp;' : '&'})}}', function(response){
+				if(response.success) {
+					alert('{{text_install_success}}');
+				} else {
+					alert('{{text_install_fail}}');
+				}
+			});
+		});
+	});
+</script>
+{{footer}}
